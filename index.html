@@ -75,7 +75,14 @@
         @media (min-width: 992px) { .dashboard { grid-template-columns: 5fr 4fr; } }
         .main-content, .visual-content { display: flex; flex-direction: column; gap: 30px; }
         
-        h1 { font-size: 2.8rem; text-align: center; margin-bottom: 10px; font-weight: 700; background: linear-gradient(45deg, var(--white-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
+        h1 {
+            font-size: 2.8rem; text-align: center; margin-bottom: 10px; font-weight: 700;
+            background: linear-gradient(45deg, var(--white-color), var(--accent-color));
+            background-clip: text; /* FIX: Added standard property */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+        }
         h2 { font-size: 1.8rem; text-align: center; color: var(--white-color); margin: 0 0 25px 0; font-weight: 700; }
         
         .greeting-container {
@@ -273,7 +280,13 @@
         .modal-footer { margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px; }
 
         #welcome-modal-content { text-align: center; }
-        #welcome-modal-content h2 { font-size: 2rem; margin-bottom: 15px; background: linear-gradient(45deg, var(--white-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        #welcome-modal-content h2 {
+            font-size: 2rem; margin-bottom: 15px;
+            background: linear-gradient(45deg, var(--white-color), var(--accent-color));
+            background-clip: text; /* FIX: Added standard property */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
         #welcome-modal-content p { margin-bottom: 25px; font-size: 1rem; color: rgba(255,255,255,0.8); }
         #user-name-input { text-align: center; font-size: 1.2rem; padding: 18px; margin-bottom: 20px; }
 
