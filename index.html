@@ -1155,6 +1155,39 @@
             let customCategories = JSON.parse(localStorage.getItem(CUSTOM_CATEGORIES_KEY)) || [];
             let expenseChart = null;
 
+            // --- FIX: One-time data migration for older transactions ---
+            // This runs once to add `categoryKey` to any old data that doesn't have it.
+            const migrateData = () => {
+                let needsSave = false;
+                transactions.forEach(t => {
+                    if (typeof t.categoryKey === 'undefined') {
+                        needsSave = true;
+                        if (t.type === 'income' || t.category === 'Income' || t.category === 'Ingreso' || t.category === 'आय' || t.category === 'આવક') {
+                            t.categoryKey = 'Income';
+                            t.category = 'Income'; // Standardize the category as well
+                        } else {
+                            // Attempt to map back to an English key
+                            let foundKey = 'custom'; // Default to custom
+                            for (const lang in translations) {
+                                const defaultCategories = translations[lang].DEFAULT_CATEGORIES;
+                                const index = defaultCategories.indexOf(t.category);
+                                if (index !== -1) {
+                                    foundKey = translations['en'].DEFAULT_CATEGORIES[index];
+                                    break;
+                                }
+                            }
+                            t.categoryKey = foundKey;
+                        }
+                    }
+                });
+                if (needsSave) {
+                    console.log('Migrating old transaction data...');
+                    localStorage.setItem('transactions', JSON.stringify(transactions));
+                }
+            };
+            migrateData();
+
+
             const initializeCurrency = () => {
                 const savedCurrencyCode = localStorage.getItem(CURRENCY_KEY) || 'INR';
                 currentCurrency = SUPPORTED_CURRENCIES.find(c => c.code === savedCurrencyCode) || SUPPORTED_CURRENCIES[0];
@@ -1320,12 +1353,11 @@
                         const tr = document.createElement('tr');
                         const sign = transaction.type === 'income' ? '+' : '-';
                         const amountColorClass = transaction.type;
-                        const defaultCategoriesEN = translations['en'].DEFAULT_CATEGORIES;
-                        const defaultCategoriesCurrentLang = getTranslation('DEFAULT_CATEGORIES');
-                        const categoryIndex = defaultCategoriesCurrentLang.indexOf(transaction.category);
-                        const categoryKey = categoryIndex !== -1 ? defaultCategoriesEN[categoryIndex] : 'custom';
-                        const category = transaction.type === 'income' ? getTranslation('category_income') : transaction.category;
-                        const categoryClass = transaction.type === 'income' ? 'Income' : categoryKey.replace(/\s+/g, '-');
+
+                        // --- FIX: Use robust keys for display and styling ---
+                        const categoryForDisplay = transaction.category === 'Income' ? getTranslation('category_income') : transaction.category;
+                        const categoryClass = transaction.categoryKey.replace(/\s+/g, '-');
+                        
                         const date = new Date(transaction.date + 'T00:00:00');
                         const langLocale = currentLang === 'es' ? 'es-ES' : 'en-US';
                         const formattedDate = date.toLocaleDateString(langLocale, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
@@ -1337,7 +1369,7 @@
                         tr.className = `transaction-item category-${categoryClass}`;
                         tr.innerHTML = `
                             <td>${formattedDate}</td>
-                            <td>${category}</td>
+                            <td>${categoryForDisplay}</td>
                             <td>${transaction.description}</td>
                             <td class="col-amount ${amountColorClass}">${sign} ${currentCurrency.symbol}${transaction.amount.toFixed(2)}</td>
                             ${attachmentCell}
@@ -1399,12 +1431,30 @@
 
                 const type = transactionTypeSelect.value;
                 const description = transactionDescriptionInput.value;
+                const category = type === 'expense' ? transactionCategorySelect.value : 'Income';
+
+                // --- FIX: Determine the permanent, English-based key for styling ---
+                let categoryKey;
+                if (type === 'expense') {
+                    const defaultCategoriesEN = translations['en'].DEFAULT_CATEGORIES;
+                    const defaultCategoriesCurrentLang = getTranslation('DEFAULT_CATEGORIES');
+                    const categoryIndex = defaultCategoriesCurrentLang.indexOf(category);
+                    categoryKey = (categoryIndex !== -1) ? defaultCategoriesEN[categoryIndex] : 'custom';
+                } else {
+                    categoryKey = 'Income';
+                }
+
                 const newTransaction = {
-                    id: Date.now(), type: type, date: document.getElementById('transaction-date').value,
-                    category: type === 'expense' ? transactionCategorySelect.value : getTranslation('category_income'),
-                    description: description, amount: parseFloat(transactionAmountInput.value),
+                    id: Date.now(),
+                    type: type,
+                    date: document.getElementById('transaction-date').value,
+                    category: category,
+                    categoryKey: categoryKey, // Save the robust key
+                    description: description,
+                    amount: parseFloat(transactionAmountInput.value),
                     attachment: attachmentData,
                 };
+
                 updateDescriptionSuggestions(description);
                 transactions.push(newTransaction);
                 saveAndRerender();
@@ -1475,7 +1525,7 @@
                     sortedTransactions.forEach(t => {
                         const sign = t.type === 'income' ? '+' : '-';
                         const date = new Date(t.date + 'T00:00:00').toLocaleDateString(langLocale, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
-                        const category = t.category;
+                        const category = t.category === 'Income' ? getTranslation('category_income') : t.category;
                         const description = t.description;
                         const amount = `${currentCurrency.symbol}${t.amount.toFixed(2)}`;
                         reportBody += `${date} | ${category} | ${description}: ${sign}${amount}\n`;
@@ -1517,7 +1567,10 @@
                 editTransactionDescriptionInput.value = transaction.description;
                 editTransactionAmountInput.value = transaction.amount;
                 toggleEditCategoryField();
-                if (transaction.type === 'expense') { editTransactionCategorySelect.value = transaction.category; }
+                // --- FIX: Use the stored category value, not a translated one
+                if (transaction.type === 'expense') { 
+                    editTransactionCategorySelect.value = transaction.category;
+                }
                 editAttachmentPreviewContainer.innerHTML = '';
                 if (transaction.attachment) {
                     const previewWrapper = document.createElement('div');
@@ -1551,12 +1604,30 @@
                 }
                 const type = editTransactionTypeSelect.value;
                 const description = editTransactionDescriptionInput.value;
+                const category = type === 'expense' ? editTransactionCategorySelect.value : 'Income';
+
+                // --- FIX: Determine the permanent, English-based key for styling ---
+                let categoryKey;
+                if (type === 'expense') {
+                    const defaultCategoriesEN = translations['en'].DEFAULT_CATEGORIES;
+                    const defaultCategoriesCurrentLang = getTranslation('DEFAULT_CATEGORIES');
+                    const categoryIndex = defaultCategoriesCurrentLang.indexOf(category);
+                    categoryKey = (categoryIndex !== -1) ? defaultCategoriesEN[categoryIndex] : 'custom';
+                } else {
+                    categoryKey = 'Income';
+                }
+
                 transactions[index] = {
-                    id: id, type: type, date: editTransactionDateInput.value,
-                    category: type === 'expense' ? editTransactionCategorySelect.value : getTranslation('category_income'),
-                    description: description, amount: parseFloat(editTransactionAmountInput.value),
+                    id: id,
+                    type: type,
+                    date: editTransactionDateInput.value,
+                    category: category,
+                    categoryKey: categoryKey, // Save the robust key
+                    description: description,
+                    amount: parseFloat(editTransactionAmountInput.value),
                     attachment: attachmentData
                 };
+
                 updateDescriptionSuggestions(description);
                 saveAndRerender();
                 closeEditModal();
