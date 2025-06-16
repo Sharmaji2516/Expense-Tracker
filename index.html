@@ -73,7 +73,7 @@
         
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 40px; }
         @media (min-width: 992px) { .dashboard { grid-template-columns: 5fr 4fr; } }
-        .main-content, .visual-content { display: flex; flex-direction: column; }
+        .main-content, .visual-content { display: flex; flex-direction: column; gap: 30px; }
         
         h1 { font-size: 2.8rem; text-align: center; margin-bottom: 10px; font-weight: 700; background: linear-gradient(45deg, var(--white-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
         h2 { font-size: 1.8rem; text-align: center; color: var(--white-color); margin: 0 0 25px 0; font-weight: 700; }
@@ -95,7 +95,7 @@
             opacity: 1; transform: rotate(15deg) scale(1.1);
         }
 
-        .section-header { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px; }
+        .section-header { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 25px; margin-bottom: 0; }
 
         .balance-display { text-align: center; margin-bottom: 20px; }
         .balance-display h3 { font-weight: 400; font-size: 1rem; color: rgba(255, 255, 255, 0.8); }
@@ -168,7 +168,7 @@
         .transaction-table-container::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
         .transaction-table { 
             width: 100%;
-            min-width: 750px; /* Increased min-width for new column */
+            min-width: 750px;
             border-collapse: collapse;
         }
         .transaction-table th, .transaction-table td { padding: 12px 15px; text-align: left; vertical-align: middle; border: 1px solid rgba(255, 255, 255, 0.1); }
@@ -192,6 +192,45 @@
 
         #chart-container { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; min-height: 400px; display: flex; align-items: center; justify-content: center; position: relative; }
         #chart-placeholder { text-align: center; font-style: italic; color: rgba(255,255,255,0.6); }
+
+        .insights-card {
+            background: rgba(0,0,0,0.2); padding: 25px; border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+        .insight-item {
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .insight-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .insight-item h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.7);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .insight-item p, .insight-item div {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        .insight-item .highlight {
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+        #insight-last-transaction p {
+            margin: 4px 0;
+            font-size: 1rem;
+        }
+        #insight-last-transaction .description {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
 
         .footer-area {
             text-align: center;
@@ -258,13 +297,18 @@
         #about-dev-modal-content .tagline { text-align: center; font-size: 1.1rem; color: var(--accent-color); font-weight: 600; margin: -5px 0 20px 0; }
         #about-dev-modal-content .summary { font-size: 1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; }
         #about-dev-modal-content h4 { font-size: 1.2rem; font-weight: 700; color: var(--secondary-color); margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
-        #about-dev-modal-content ul { list-style: none; padding-left: 0; }
-        #about-dev-modal-content li { margin-bottom: 8px; color: rgba(255,255,255,0.85); }
+        #about-dev-modal-content ul { list-style: none; padding-left: 20px; }
+        #about-dev-modal-content ul li { position: relative; margin-bottom: 8px; color: rgba(255,255,255,0.85); padding-left: 15px; }
+        #about-dev-modal-content ul li::before {
+            content: '»';
+            position: absolute;
+            left: -5px;
+            color: var(--accent-color);
+        }
         #about-dev-modal-content .contact-links { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; }
         #about-dev-modal-content .contact-links a { color: var(--text-color); text-decoration: none; font-weight: 500; transition: color 0.3s; }
         #about-dev-modal-content .contact-links a:hover { color: var(--accent-color); }
 
-        /* Image Viewer (Lightbox) Styles */
         #image-viewer-overlay {
             justify-content: center; align-items: center;
         }
@@ -402,10 +446,29 @@
             </div>
 
             <div class="visual-content">
-                <h2 class="section-header" data-i18n-key="header_expense_analysis">Expense Analysis</h2>
-                <div id="chart-container">
-                    <canvas id="expense-chart"></canvas>
-                    <p id="chart-placeholder" data-i18n-key="chart_placeholder">Add an expense to see the chart.</p>
+                <div id="insights-box" class="insights-card hidden">
+                    <div class="insight-item">
+                        <h4 data-i18n-key="insight_highest_expense">Highest Expense</h4>
+                        <p id="insight-highest-expense">N/A</p>
+                    </div>
+                    <div class="insight-item">
+                        <h4 data-i18n-key="insight_top_category">Top Spending Category</h4>
+                        <p id="insight-top-category">N/A</p>
+                    </div>
+                    <div class="insight-item">
+                        <h4 data-i18n-key="insight_last_transaction">Last Transaction</h4>
+                        <div id="insight-last-transaction">
+                           <p data-i18n-key="insight_no_transactions">No transactions yet.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="section-header" style="padding-top:0;" data-i18n-key="header_expense_analysis">Expense Analysis</h2>
+                    <div id="chart-container">
+                        <canvas id="expense-chart"></canvas>
+                        <p id="chart-placeholder" data-i18n-key="chart_placeholder">Add an expense to see the chart.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -538,18 +601,33 @@
             </div>
             <div class="modal-body">
                 <h3>Lav Sharma</h3>
-                <p class="tagline">Full-Stack Developer | B.Tech IT Student</p>
+                <p class="tagline">Web Developer | B.Tech IT Student</p>
                 <div class="contact-links">
                     <a href="mailto:lavsharma.cor@gmail.com" target="_blank">📧 Email</a>
                     <a href="https://linkedin.com/in/lav-sharma-a9919b2ab" target="_blank">🔗 LinkedIn</a>
                     <a href="https://github.com/Sharmaji2516" target="_blank">👨‍💻 GitHub</a>
                 </div>
                 <p class="summary">
-                    I’m a passionate and dedicated B.Tech Information Technology student, skilled in web development, database management, and problem-solving. My expertise spans Node.js, Express.js, MongoDB, and SQL, enabling me to design scalable, secure, and high-performance solutions.
+                    I’m a passionate and dedicated B.Tech Information Technology student, skilled in web development, database management, and problem-solving. My expertise spans Node.js, Express.js, and MongoDB, enabling me to design scalable and high-performance solutions.
                     <br><br>
-                    With hands-on project experience—including REST API development and portfolio creation—I thrive on building impactful software that enhances efficiency. I am eager to tackle new challenges, refine my skills, and collaborate on exciting opportunities in software development.
+                    With hands-on project experience—including REST API development and a portfolio website—I thrive on building impactful software. I am eager to tackle new challenges, refine my skills, and collaborate on exciting opportunities in software development.
                 </p>
-                <h4>Key Skills & Education...</h4>
+                <h4>Key Skills</h4>
+                <ul>
+                    <li><strong>Programming Languages:</strong> C, C++</li>
+                    <li><strong>Web Technologies:</strong> HTML, CSS, Tailwind CSS, Node.js, Express.js</li>
+                    <li><strong>Databases:</strong> MongoDB</li>
+                    <li><strong>Developer Tools:</strong> VS Code, Git, GitHub, Postman</li>
+                </ul>
+                <h4>Education</h4>
+                <ul>
+                    <li>
+                        <strong>Bachelor of Technology (B.Tech), Information Technology</strong>
+                        <br>Jaipur Engineering College and Research Centre, Jaipur
+                        <br><em>Aug 2021 – Aug 2025</em>
+                        <br><em>CGPA: 8.42</em>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
@@ -628,6 +706,11 @@
                     link_send_email: "📧 Send Email",
                     btn_done: "Done",
                     about_dev_title: "About the Developer",
+                    insight_highest_expense: "Highest Expense",
+                    insight_top_category: "Top Spending Category",
+                    insight_last_transaction: "Last Transaction",
+                    insight_no_transactions: "No transactions yet.",
+                    insight_no_expenses: "No expenses yet.",
                     toast_success_add: "Transaction added successfully!",
                     toast_success_update: "Transaction updated successfully.",
                     toast_success_delete: "Transaction deleted.",
@@ -636,7 +719,6 @@
                     toast_success_category_add: "New category added!",
                     toast_success_currency_update: "Currency updated successfully!",
                     toast_info_category_exists: "This category already exists.",
-                    toast_info_email_soon: "Hi {name}, email feature is coming soon!",
                     toast_danger_all_data_cleared: "All data has been cleared.",
                     confirm_delete_transaction: "Are you sure you want to delete this transaction?",
                     confirm_clear_all_data: "Are you sure you want to delete ALL data? This action cannot be undone.",
@@ -711,6 +793,11 @@
                     link_send_email: "📧 Enviar Email",
                     btn_done: "Hecho",
                     about_dev_title: "Sobre el Desarrollador",
+                    insight_highest_expense: "Gasto más Alto",
+                    insight_top_category: "Categoría de Mayor Gasto",
+                    insight_last_transaction: "Última Transacción",
+                    insight_no_transactions: "Aún no hay transacciones.",
+                    insight_no_expenses: "Aún no hay gastos.",
                     toast_success_add: "¡Transacción añadida con éxito!",
                     toast_success_update: "¡Transacción actualizada con éxito!",
                     toast_success_delete: "Transacción eliminada.",
@@ -719,7 +806,6 @@
                     toast_success_category_add: "¡Nueva categoría añadida!",
                     toast_success_currency_update: "¡Moneda actualizada con éxito!",
                     toast_info_category_exists: "Esta categoría ya existe.",
-                    toast_info_email_soon: "¡Hola {name}, la función de email llegará pronto!",
                     toast_danger_all_data_cleared: "Todos los datos han sido borrados.",
                     confirm_delete_transaction: "¿Estás seguro de que quieres eliminar esta transacción?",
                     confirm_clear_all_data: "¿Estás seguro de que quieres borrar TODOS los datos? Esta acción no se puede deshacer.",
@@ -729,10 +815,184 @@
                     toast_speech_error_no_speech: "No se detectó voz. Por favor, inténtalo de nuevo.",
                     toast_speech_error_permission: "Permiso de micrófono denegado. Por favor, permítelo en la configuración de tu navegador.",
                     toast_speech_error_generic: "Error de reconocimiento de voz.",
-                    toast_speech_error_category_not_found: "Categoría '{category}' no encontrada. Por favor, selecciona manualmente.",
+                    toast_speech_error_category_not_found: "Categoría '{category}' no encontrada. Por favor, selecciona manually.",
                     toast_speech_error_number_not_understood: "No se pudo entender el número. Por favor, inténtalo de nuevo.",
                     category_income: "Ingreso",
                     DEFAULT_CATEGORIES: ["Comida", "Transporte", "Facturas", "Compras", "Entretenimiento", "Otro"],
+                },
+                'hi': {
+                    title: "आय और व्यय ट्रैकर",
+                    greeting_welcome: "स्वागत है, {name}!",
+                    greeting_welcome_back: "वापसी पर स्वागत है, {name}!",
+                    tooltip_settings: "सेटिंग्स",
+                    tooltip_change_name: "नाम बदलें",
+                    tooltip_add_category: "नई श्रेणी जोड़ें",
+                    tooltip_record_category: "श्रेणी रिकॉर्ड करें",
+                    tooltip_record_description: "विवरण रिकॉर्ड करें",
+                    tooltip_record_amount: "राशि रिकॉर्ड करें",
+                    tooltip_close: "बंद करें",
+                    tooltip_remove: "हटाएं",
+                    label_current_balance: "वर्तमान शेष",
+                    summary_total_income: "कुल आय",
+                    summary_total_expenses: "कुल व्यय",
+                    summary_monthly_expenses: "इस महीने का खर्च",
+                    summary_transactions: "लेन-देन",
+                    header_new_transaction: "नया लेन-देन",
+                    label_type: "प्रकार",
+                    option_expense: "व्यय",
+                    option_income: "आय",
+                    label_date: "तारीख",
+                    label_category: "श्रेणी",
+                    label_description: "विवरण",
+                    label_amount: "राशि",
+                    label_attachment: "बिल संलग्न करें",
+                    label_select_file: "फ़ाइल चुनें...",
+                    label_change_file: "फ़ाइल बदलें...",
+                    label_no_attachment: "कोई अनुलग्नक नहीं।",
+                    btn_add_transaction: "लेन-देन जोड़ें",
+                    header_expense_analysis: "व्यय विश्लेषण",
+                    chart_placeholder: "चार्ट देखने के लिए एक व्यय जोड़ें।",
+                    header_transaction_history: "लेन-देन का इतिहास",
+                    th_date: "तारीख",
+                    th_category: "श्रेणी",
+                    th_description: "विवरण",
+                    th_amount: "राशि",
+                    th_attachment: "अनुलग्नक",
+                    th_actions: "कार्रवाइयाँ",
+                    btn_send_report: "✉️ ईमेल पर रिपोर्ट भेजें",
+                    btn_clear_data: "🗑️ सारा डेटा साफ़ करें",
+                    btn_about_dev: "</> डेवलपर के बारे में",
+                    copyright: "सर्वाधिकार सुरक्षित © लव शर्मा 2025",
+                    modal_edit_title: "लेन-देन संपादित करें",
+                    btn_cancel: "रद्द करें",
+                    btn_save_changes: "बदलाव सहेजें",
+                    welcome_title: "स्वागत है!",
+                    welcome_text: "शुरू करने के लिए कृपया अपना नाम दर्ज करें।",
+                    welcome_change_title: "अपना नाम बदलें",
+                    welcome_change_text: "नीचे एक नया नाम दर्ज करें।",
+                    placeholder_your_name: "आपका नाम",
+                    btn_continue: "जारी रखें",
+                    settings_title: "ऐप सेटिंग्स",
+                    label_language: "भाषा:",
+                    label_currency: "मुद्रा:",
+                    warning_currency: "मुद्रा बदलने के लिए सभी लेन-देन साफ़ करें।",
+                    label_report_bug: "बग की रिपोर्ट करें:",
+                    link_send_email: "📧 ईमेल भेजें",
+                    btn_done: "हो गया",
+                    about_dev_title: "डेवलपर के बारे में",
+                    insight_highest_expense: "सबसे बड़ा खर्च",
+                    insight_top_category: "शीर्ष खर्च श्रेणी",
+                    insight_last_transaction: "अंतिम लेन-देन",
+                    insight_no_transactions: "अभी तक कोई लेन-देन नहीं।",
+                    insight_no_expenses: "अभी तक कोई खर्च नहीं।",
+                    toast_success_add: "लेन-देन सफलतापूर्वक जोड़ा गया!",
+                    toast_success_update: "लेन-देन सफलतापूर्वक अपडेट किया गया।",
+                    toast_success_delete: "लेन-देन हटा दिया गया।",
+                    toast_success_duplicate: "लेन-देन डुप्लिकेट किया गया।",
+                    toast_success_name_update: "नाम सफलतापूर्वक अपडेट किया गया!",
+                    toast_success_category_add: "नई श्रेणी जोड़ी गई!",
+                    toast_success_currency_update: "मुद्रा सफलतापूर्वक अपडेट की गई!",
+                    toast_info_category_exists: "यह श्रेणी पहले से मौजूद है।",
+                    toast_danger_all_data_cleared: "सारा डेटा साफ़ कर दिया गया है।",
+                    confirm_delete_transaction: "क्या आप वाकई इस लेन-देन को हटाना चाहते हैं?",
+                    confirm_clear_all_data: "क्या आप वाकई सारा डेटा हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।",
+                    confirm_clear_all_data_final: "यह सभी सहेजे गए विवरणों और कस्टम श्रेणियों को भी साफ़ कर देगा। यह आपकी अंतिम चेतावनी है।",
+                    prompt_new_category: "नई श्रेणी का नाम दर्ज करें:",
+                    toast_speech_listening: "सुन रहा है...",
+                    toast_speech_error_no_speech: "कोई भाषण नहीं मिला। कृपया पुनः प्रयास करें।",
+                    toast_speech_error_permission: "माइक्रोफ़ोन की अनुमति अस्वीकृत। कृपया अपनी ब्राउज़र सेटिंग्स में इसकी अनुमति दें।",
+                    toast_speech_error_generic: "वाक् पहचान त्रुटि।",
+                    toast_speech_error_category_not_found: "श्रेणी '{category}' नहीं मिली। कृपया मैन्युअल रूप से चुनें।",
+                    toast_speech_error_number_not_understood: "संख्या समझ में नहीं आई। कृपया पुनः प्रयास करें।",
+                    category_income: "आय",
+                    DEFAULT_CATEGORIES: ["भोजन", "परिवहन", "बिल", "खरीदारी", "मनोरंजन", "अन्य"],
+                },
+                'gu': {
+                    title: "આવક અને ખર્ચ ટ્રેકર",
+                    greeting_welcome: "સ્વાગત છે, {name}!",
+                    greeting_welcome_back: "ફરી સ્વાગત છે, {name}!",
+                    tooltip_settings: "સેટિંગ્સ",
+                    tooltip_change_name: "નામ બદલો",
+                    tooltip_add_category: "નવી શ્રેણી ઉમેરો",
+                    tooltip_record_category: "શ્રેણી રેકોર્ડ કરો",
+                    tooltip_record_description: "વર્ણન રેકોર્ડ કરો",
+                    tooltip_record_amount: "રકમ રેકોર્ડ કરો",
+                    tooltip_close: "બંધ કરો",
+                    tooltip_remove: "દૂર કરો",
+                    label_current_balance: "વર્તમાન બેલેન્સ",
+                    summary_total_income: "કુલ આવક",
+                    summary_total_expenses: "કુલ ખર્ચ",
+                    summary_monthly_expenses: "આ મહિનાનો ખર્ચ",
+                    summary_transactions: "વ્યવહારો",
+                    header_new_transaction: "નવો વ્યવહાર",
+                    label_type: "પ્રકાર",
+                    option_expense: "ખર્ચ",
+                    option_income: "આવક",
+                    label_date: "તારીખ",
+                    label_category: "શ્રેણી",
+                    label_description: "વર્ણન",
+                    label_amount: "રકમ",
+                    label_attachment: "બિલ જોડો",
+                    label_select_file: "ફાઈલ પસંદ કરો...",
+                    label_change_file: "ફાઈલ બદલો...",
+                    label_no_attachment: "કોઈ જોડાણ નથી.",
+                    btn_add_transaction: "વ્યવહાર ઉમેરો",
+                    header_expense_analysis: "ખર્ચ વિશ્લેષણ",
+                    chart_placeholder: "ચાર્ટ જોવા માટે ખર્ચ ઉમેરો.",
+                    header_transaction_history: "વ્યવહાર ઇતિહાસ",
+                    th_date: "તારીખ",
+                    th_category: "શ્રેણી",
+                    th_description: "વર્ણન",
+                    th_amount: "રકમ",
+                    th_attachment: "જોડાણ",
+                    th_actions: "ક્રિયાઓ",
+                    btn_send_report: "✉️ ઇમેઇલ પર રિપોર્ટ મોકલો",
+                    btn_clear_data: "🗑️ બધો ડેટા સાફ કરો",
+                    btn_about_dev: "</> ડેવલપર વિશે",
+                    copyright: "સર્વાધિકાર સુરક્ષિત © લવ શર્મા 2025",
+                    modal_edit_title: "વ્યવહાર સંપાદિત કરો",
+                    btn_cancel: "રદ કરો",
+                    btn_save_changes: "ફેરફારો સાચવો",
+                    welcome_title: "સ્વાગત છે!",
+                    welcome_text: "શરૂ કરવા માટે કૃપા કરીને તમારું નામ દાખલ કરો.",
+                    welcome_change_title: "તમારું નામ બદલો",
+                    welcome_change_text: "નીચે નવું નામ દાખલ કરો.",
+                    placeholder_your_name: "તમારું નામ",
+                    btn_continue: "આગળ વધો",
+                    settings_title: "એપ સેટિંગ્સ",
+                    label_language: "ભાષા:",
+                    label_currency: "ચલણ:",
+                    warning_currency: "ચલણ બદલવા માટે બધા વ્યવહારો સાફ કરો.",
+                    label_report_bug: "બગની જાણ કરો:",
+                    link_send_email: "📧 ઇમેઇલ મોકલો",
+                    btn_done: "પૂર્ણ",
+                    about_dev_title: "ડેવલપર વિશે",
+                    insight_highest_expense: "સૌથી વધુ ખર્ચ",
+                    insight_top_category: "ટોચની ખર્ચ શ્રેણી",
+                    insight_last_transaction: "છેલ્લો વ્યવહાર",
+                    insight_no_transactions: "હજુ સુધી કોઈ વ્યવહાર નથી.",
+                    insight_no_expenses: "હજુ સુધી કોઈ ખર્ચ નથી.",
+                    toast_success_add: "વ્યવહાર સફળતાપૂર્વક ઉમેરાયો!",
+                    toast_success_update: "વ્યવહાર સફળતાપૂર્વક અપડેટ થયો.",
+                    toast_success_delete: "વ્યવહાર કાઢી નાખ્યો.",
+                    toast_success_duplicate: "વ્યવહાર ડુપ્લિકેટ થયો.",
+                    toast_success_name_update: "નામ સફળતાપૂર્વક અપડેટ થયું!",
+                    toast_success_category_add: "નવી શ્રેણી ઉમેરાઈ!",
+                    toast_success_currency_update: "ચલણ સફળતાપૂર્વક અપડેટ થયું!",
+                    toast_info_category_exists: "આ શ્રેણી પહેલાથી અસ્તિત્વમાં છે.",
+                    toast_danger_all_data_cleared: "બધો ડેટા સાફ થઈ ગયો છે.",
+                    confirm_delete_transaction: "શું તમે ખરેખર આ વ્યવહારને કાઢી નાખવા માંગો છો?",
+                    confirm_clear_all_data: "શું તમે ખરેખર બધો ડેટા કાઢી નાખવા માંગો છો? આ ક્રિયાને પૂર્વવત્ કરી શકાતી નથી.",
+                    confirm_clear_all_data_final: "આ બધા સાચવેલા વર્ણનો અને કસ્ટમ શ્રેણીઓને પણ સાફ કરશે. આ તમારી અંતિમ ચેતવણી છે.",
+                    prompt_new_category: "નવી શ્રેણીનું નામ દાખલ કરો:",
+                    toast_speech_listening: "સાંભળી રહ્યું છે...",
+                    toast_speech_error_no_speech: "કોઈ વાણી મળી નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+                    toast_speech_error_permission: "માઇક્રોફોનની પરવાનગી નકારી. કૃપા કરીને તેને તમારી બ્રાઉઝર સેટિંગ્સમાં મંજૂરી આપો.",
+                    toast_speech_error_generic: "વાણી ઓળખમાં ભૂલ.",
+                    toast_speech_error_category_not_found: "શ્રેણી '{category}' મળી નથી. કૃપા કરીને જાતે પસંદ કરો.",
+                    toast_speech_error_number_not_understood: "સંખ્યા સમજી શકાઈ નથી. કૃપા કરીને ફરી પ્રયાસ કરો.",
+                    category_income: "આવક",
+                    DEFAULT_CATEGORIES: ["ખોરાક", "પરિવહન", "બિલ", "ખરીદી", "મનોરંજન", "અન્ય"],
                 }
             };
             let currentLang = localStorage.getItem(LANG_KEY) || 'en';
@@ -794,7 +1054,12 @@
                     document.querySelectorAll('.mic-btn').forEach(btn => btn.classList.remove('hidden'));
                     recognition = new SpeechRecognition();
                     recognition.continuous = false;
-                    recognition.lang = currentLang === 'es' ? 'es-ES' : 'en-US';
+                    
+                    if(currentLang === 'es') recognition.lang = 'es-ES';
+                    else if (currentLang === 'hi') recognition.lang = 'hi-IN';
+                    else if (currentLang === 'gu') recognition.lang = 'gu-IN';
+                    else recognition.lang = 'en-US';
+                    
                     recognition.interimResults = false;
                     recognition.maxAlternatives = 1;
                     recognition.onstart = () => { if (currentSpeechTarget) currentSpeechTarget.button.classList.add('listening'); showToast('toast_speech_listening', 'info', true); };
@@ -833,7 +1098,6 @@
             };
             function startListening(button, input, type) { if (recognition) { currentSpeechTarget = { button, input, type }; recognition.start(); } }
             
-            // --- IMAGE ATTACHMENT LOGIC ---
             const MAX_IMAGE_WIDTH = 800;
             const IMAGE_QUALITY = 0.7;
 
@@ -863,6 +1127,10 @@
             }
             
             // DOM Elements
+            const insightsBox = document.getElementById('insights-box');
+            const insightHighestExpenseEl = document.getElementById('insight-highest-expense');
+            const insightTopCategoryEl = document.getElementById('insight-top-category');
+            const insightLastTransactionEl = document.getElementById('insight-last-transaction');
             const greetingElement = document.getElementById('user-greeting'), changeNameBtn = document.getElementById('change-name-btn');
             const welcomeModalOverlay = document.getElementById('welcome-modal-overlay'), welcomeModalTitle = document.getElementById('welcome-modal-title'), welcomeModalText = document.getElementById('welcome-modal-text'), welcomeForm = document.getElementById('welcome-form'), userNameInput = document.getElementById('user-name-input');
             const transactionForm = document.getElementById('transaction-form'), transactionTableBody = document.getElementById('transaction-table-body');
@@ -881,8 +1149,7 @@
             const micBtnCategory = document.getElementById('mic-btn-category'), micBtnDescription = document.getElementById('mic-btn-description'), micBtnAmount = document.getElementById('mic-btn-amount');
             const imageViewerOverlay = document.getElementById('image-viewer-overlay'), viewerImage = document.getElementById('viewer-image'), closeViewerBtn = document.getElementById('close-viewer-btn');
 
-            let editAttachmentAction = 'keep'; // 'keep', 'remove', or a file object
-
+            let editAttachmentAction = 'keep';
             const USER_NAME_KEY = 'trackerUserName', CUSTOM_CATEGORIES_KEY = 'customExpenseCategories', SAVED_DESCRIPTIONS_KEY = 'savedExpenseDescriptions';
             let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
             let customCategories = JSON.parse(localStorage.getItem(CUSTOM_CATEGORIES_KEY)) || [];
@@ -975,6 +1242,51 @@
                 animateCountUp(summaryExpensesEl, totalExpenses, true);
                 animateCountUp(summaryMonthlyExpensesEl, monthlyExpenses, true);
                 animateCountUp(summaryCountEl, transactions.length, false);
+            };
+
+            const updateInsights = () => {
+                if (transactions.length === 0) {
+                    insightsBox.classList.add('hidden');
+                    return;
+                }
+                insightsBox.classList.remove('hidden');
+
+                const expenses = transactions.filter(t => t.type === 'expense');
+
+                // 1. Highest Expense
+                if (expenses.length > 0) {
+                    const highestExpense = [...expenses].sort((a, b) => b.amount - a.amount)[0];
+                    insightHighestExpenseEl.innerHTML = `<span class="highlight">${currentCurrency.symbol}${highestExpense.amount.toFixed(2)}</span> on "${highestExpense.description}"`;
+                } else {
+                    insightHighestExpenseEl.textContent = getTranslation('insight_no_expenses');
+                }
+
+                // 2. Top Spending Category
+                if (expenses.length > 0) {
+                    const categoryTotals = new Map();
+                    expenses.forEach(expense => {
+                        const total = categoryTotals.get(expense.category) || 0;
+                        categoryTotals.set(expense.category, total + expense.amount);
+                    });
+                    const topCategory = [...categoryTotals.entries()].sort((a, b) => b[1] - a[1])[0];
+                    insightTopCategoryEl.innerHTML = `<span class="highlight">${topCategory[0]}</span> (${currentCurrency.symbol}${topCategory[1].toFixed(2)})`;
+                } else {
+                    insightTopCategoryEl.textContent = getTranslation('insight_no_expenses');
+                }
+
+                // 3. Last Transaction
+                const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime() || b.id - a.id);
+                const lastTx = sortedTransactions[0];
+                const sign = lastTx.type === 'income' ? '+' : '-';
+                const amountClass = lastTx.type;
+                const langLocale = currentLang === 'es' ? 'es-ES' : 'en-US';
+                const formattedDate = new Date(lastTx.date + 'T00:00:00').toLocaleDateString(langLocale, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+                
+                insightLastTransactionEl.innerHTML = `
+                    <p class="description">${lastTx.description}</p>
+                    <p class="col-amount ${amountClass}">${sign} ${currentCurrency.symbol}${lastTx.amount.toFixed(2)}</p>
+                    <p style="opacity: 0.7;">on ${formattedDate}</p>
+                `;
             };
 
             const getAllCategories = () => [...getTranslation('DEFAULT_CATEGORIES'), ...customCategories].sort();
@@ -1072,7 +1384,11 @@
             
             const saveAndRerender = () => {
                 localStorage.setItem('transactions', JSON.stringify(transactions));
-                updateAllCurrencyDisplays(); renderTransactions(); renderOrUpdateChart(); updateSummaryAndBalance();
+                updateAllCurrencyDisplays(); 
+                renderTransactions(); 
+                renderOrUpdateChart(); 
+                updateSummaryAndBalance();
+                updateInsights();
             };
             
             transactionForm.addEventListener('submit', async (e) => {
@@ -1138,11 +1454,45 @@
                 }
             });
             
-            sendEmailBtn.addEventListener('click', () => {
+            const generateEmailReport = () => {
                 const userName = localStorage.getItem(USER_NAME_KEY) || 'User';
-                showToast('toast_info_email_soon', 'info', true, { name: userName });
+                const balance = document.getElementById('current-balance').textContent;
+                const income = document.getElementById('summary-income').textContent;
+                const expenses = document.getElementById('summary-expenses').textContent;
+                const langLocale = currentLang === 'es' ? 'es-ES' : 'en-US';
+                let reportBody = `Hi ${userName},\n\n`;
+                reportBody += `Here is your transaction report from the Income & Expense Tracker:\n`;
+                reportBody += `------------------------------------\n`;
+                reportBody += `Current Balance: ${balance}\n`;
+                reportBody += `Total Income: ${income}\n`;
+                reportBody += `Total Expenses: ${expenses}\n`;
+                reportBody += `------------------------------------\n\n`;
+                reportBody += `TRANSACTION HISTORY:\n\n`;
+                if (transactions.length === 0) {
+                    reportBody += "No transactions to report.\n";
+                } else {
+                    const sortedTransactions = [...transactions].sort((a, b) => new Date(a.date) - new Date(b.date));
+                    sortedTransactions.forEach(t => {
+                        const sign = t.type === 'income' ? '+' : '-';
+                        const date = new Date(t.date + 'T00:00:00').toLocaleDateString(langLocale, { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
+                        const category = t.category;
+                        const description = t.description;
+                        const amount = `${currentCurrency.symbol}${t.amount.toFixed(2)}`;
+                        reportBody += `${date} | ${category} | ${description}: ${sign}${amount}\n`;
+                    });
+                }
+                reportBody += `\n\nThank you for using the tracker!`;
+                return reportBody;
+            };
+            sendEmailBtn.addEventListener('click', () => {
+                const recipientEmail = prompt("Please enter the recipient's email address:", "example@email.com");
+                if (recipientEmail === null || recipientEmail.trim() === "") return;
+                const subject = "My Income & Expense Report";
+                const body = generateEmailReport();
+                const mailtoLink = `mailto:${recipientEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+                window.location.href = mailtoLink;
             });
-            
+
             transactionTypeSelect.addEventListener('change', toggleCategoryField);
             
             const handleDuplicate = (id) => {
@@ -1168,7 +1518,6 @@
                 editTransactionAmountInput.value = transaction.amount;
                 toggleEditCategoryField();
                 if (transaction.type === 'expense') { editTransactionCategorySelect.value = transaction.category; }
-                
                 editAttachmentPreviewContainer.innerHTML = '';
                 if (transaction.attachment) {
                     const previewWrapper = document.createElement('div');
@@ -1182,7 +1531,6 @@
                 } else {
                     editAttachmentPreviewContainer.innerHTML = `<em>${getTranslation('label_no_attachment')}</em>`;
                 }
-
                 editTransactionAttachmentInput.value = '';
                 editModalOverlay.classList.remove('hidden');
             };
@@ -1193,16 +1541,14 @@
                 const id = parseInt(editTransactionIdInput.value);
                 const index = transactions.findIndex(t => t.id === id);
                 if (index === -1) return;
-                
                 let attachmentData;
                 if (editAttachmentAction === 'remove') {
                     attachmentData = null;
                 } else if (editAttachmentAction instanceof File) {
                     attachmentData = await processImageFile(editAttachmentAction);
-                } else { // 'keep'
+                } else {
                     attachmentData = transactions[index].attachment;
                 }
-
                 const type = editTransactionTypeSelect.value;
                 const description = editTransactionDescriptionInput.value;
                 transactions[index] = {
@@ -1217,7 +1563,6 @@
                 showToast('toast_success_update', 'info', true);
             });
 
-            // Listen for new file in edit modal
             editTransactionAttachmentInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -1228,7 +1573,6 @@
 
             const openAboutDevModal = () => aboutDevModalOverlay.classList.remove('hidden');
             const closeAboutDevModal = () => aboutDevModalOverlay.classList.add('hidden');
-            
             aboutDevBtn.addEventListener('click', openAboutDevModal);
             closeAboutDevModalBtn.addEventListener('click', closeAboutDevModal);
             aboutDevModalOverlay.addEventListener('click', (e) => { if (e.target === aboutDevModalOverlay) closeAboutDevModal(); });
@@ -1252,7 +1596,7 @@
             languageSelect.addEventListener('change', () => { currentLang = languageSelect.value; localStorage.setItem(LANG_KEY, currentLang); applyTranslations(); initializeSpeechRecognition(); });
             const populateLanguageDropdown = () => {
                 languageSelect.innerHTML = '';
-                const langOptions = { 'en': 'English', 'es': 'Español' };
+                const langOptions = { 'en': 'English', 'es': 'Español', 'hi': 'हिन्दी', 'gu': 'ગુજરાતી' };
                 for (const langCode in langOptions) { const option = document.createElement('option'); option.value = langCode; option.textContent = langOptions[langCode]; languageSelect.appendChild(option); }
                 languageSelect.value = currentLang;
             };
@@ -1261,7 +1605,6 @@
             micBtnDescription.addEventListener('click', () => startListening(micBtnDescription, transactionDescriptionInput, 'text'));
             micBtnAmount.addEventListener('click', () => startListening(micBtnAmount, transactionAmountInput, 'number'));
 
-            // New Attachment listeners
             transactionAttachmentInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if(file) {
@@ -1274,12 +1617,10 @@
                 attachmentPreview.classList.add('hidden');
             });
             
-            // Image Viewer Listeners
             const openImageViewer = (src) => { viewerImage.src = src; imageViewerOverlay.classList.remove('hidden'); };
             const closeImageViewer = () => imageViewerOverlay.classList.add('hidden');
             closeViewerBtn.addEventListener('click', closeImageViewer);
             imageViewerOverlay.addEventListener('click', (e) => { if(e.target === imageViewerOverlay) closeImageViewer(); });
-
 
             // --- Initial Load ---
             initializeCurrency();
