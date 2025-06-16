@@ -23,6 +23,7 @@
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes toast-in { from { transform: translateX(120%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         @keyframes toast-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(120%); opacity: 0; } }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -35,12 +36,36 @@
         }
 
         .container {
+            position: relative;
             width: 100%; max-width: 1300px; padding: 40px;
             background: rgba(0, 0, 0, 0.3); border-radius: 20px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
             backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.18);
             animation: slideInUp 0.8s ease-out;
+        }
+        
+        #settings-btn {
+            position: absolute;
+            top: 25px;
+            right: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--white-color);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        #settings-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+            box-shadow: 0 0 15px rgba(255,255,255,0.2);
         }
         
         .dashboard { display: grid; grid-template-columns: 1fr; gap: 40px; }
@@ -103,7 +128,7 @@
         .action-btn { background: none; border: none; cursor: pointer; font-size: 1.2rem; transition: all 0.3s ease; padding: 5px; color: var(--text-color); opacity: 0.7; }
         .action-btn:hover { opacity: 1; transform: scale(1.2); }
         
-        .global-actions { display: flex; justify-content: space-between; gap: 15px; margin-top: 40px; }
+        .global-actions { display: flex; justify-content: center; gap: 15px; margin-top: 40px; }
         
         .table-border-wrapper { padding: 2px; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color)); background-size: 200% 200%; animation: gradient-animation 8s ease infinite; border-radius: 10px; margin-top: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .transaction-table-container { max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 8px; }
@@ -129,16 +154,43 @@
         #chart-container { background: rgba(0,0,0,0.2); padding: 20px; border-radius: 8px; min-height: 400px; display: flex; align-items: center; justify-content: center; position: relative; }
         #chart-placeholder { text-align: center; font-style: italic; color: rgba(255,255,255,0.6); }
 
-        .developer-credit { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2); font-size: 0.9rem; font-weight: 400; background: linear-gradient(90deg, var(--secondary-color), var(--white-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: fadeIn 1.5s ease; text-shadow: 1px 1px 5px rgba(0,0,0,0.2); }
+        .footer-area {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        #about-dev-btn {
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: var(--white-color);
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #about-dev-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        .copyright-text {
+            margin-top: 15px;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.5);
+        }
         
         /* Modal Styles */
         .hidden { display: none !important; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; backdrop-filter: blur(5px); }
         .modal-overlay:not(.hidden) { opacity: 1; }
-        .modal-content { background: rgba(44, 62, 80, 0.9); padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border: 1px solid rgba(255, 255, 255, 0.18); transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-content { background: #2c3e50; padding: 30px; border-radius: 15px; width: 90%; max-width: 600px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); border: 1px solid rgba(255, 255, 255, 0.18); transform: scale(0.95); transition: transform 0.3s ease; }
         .modal-overlay:not(.hidden) .modal-content { transform: scale(1); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 15px; }
         .modal-header h2 { margin: 0; font-size: 1.5rem; text-align: left; }
+        .modal-header h2 .gear-icon { display: inline-block; animation: spin 4s linear infinite; }
         .close-btn { background: none; border: none; color: var(--white-color); font-size: 2rem; cursor: pointer; line-height: 1; transition: transform 0.2s ease, color 0.2s ease; }
         .close-btn:hover { transform: rotate(90deg); color: var(--danger-color); }
         .modal-footer { margin-top: 25px; display: flex; justify-content: flex-end; gap: 15px; }
@@ -148,7 +200,60 @@
         #welcome-modal-content h2 { font-size: 2rem; margin-bottom: 15px; background: linear-gradient(45deg, var(--white-color), var(--accent-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         #welcome-modal-content p { margin-bottom: 25px; font-size: 1rem; color: rgba(255,255,255,0.8); }
         #user-name-input { text-align: center; font-size: 1.2rem; padding: 18px; margin-bottom: 20px; width: 100%; }
+
+        /* Settings Modal Specific Styles */
+        #settings-modal-content { max-width: 450px; }
+        .settings-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .settings-row:last-of-type { border-bottom: none; }
+        .settings-row label {
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+        }
+        .settings-row select {
+            background-color: rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        select:disabled { opacity: 0.6; cursor: not-allowed; }
+        .settings-warning {
+            font-size: 0.8rem;
+            color: var(--accent-color);
+            text-align: right;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+        #report-bug-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        #report-bug-link:hover {
+            text-decoration: underline;
+            filter: brightness(1.2);
+        }
         
+        /* About Dev Modal Specific Styles */
+        #about-dev-modal-content { max-height: 80vh; overflow-y: auto; }
+        #about-dev-modal-content::-webkit-scrollbar { width: 6px; }
+        #about-dev-modal-content::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); border-radius: 10px; }
+        #about-dev-modal-content::-webkit-scrollbar-thumb { background: var(--secondary-color); border-radius: 10px; }
+        #about-dev-modal-content h3 { font-size: 2rem; font-weight: 700; color: var(--white-color); text-align: center; }
+        #about-dev-modal-content .tagline { text-align: center; font-size: 1.1rem; color: var(--accent-color); font-weight: 600; margin: -5px 0 20px 0; }
+        #about-dev-modal-content .summary { font-size: 1rem; line-height: 1.6; color: rgba(255, 255, 255, 0.9); margin-bottom: 25px; }
+        #about-dev-modal-content h4 { font-size: 1.2rem; font-weight: 700; color: var(--secondary-color); margin-top: 20px; margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; }
+        #about-dev-modal-content ul { list-style: none; padding-left: 0; }
+        #about-dev-modal-content li { margin-bottom: 8px; color: rgba(255,255,255,0.85); }
+        #about-dev-modal-content .contact-links { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 20px; }
+        #about-dev-modal-content .contact-links a { color: var(--text-color); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        #about-dev-modal-content .contact-links a:hover { color: var(--accent-color); }
+
         /* Toast Notification Styles */
         #toast-container { position: fixed; top: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
         .toast { padding: 15px 25px; border-radius: 8px; color: var(--white-color); font-size: 1rem; font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display: flex; align-items: center; gap: 10px; animation: toast-in 0.5s ease forwards; }
@@ -160,6 +265,7 @@
 </head>
 <body>
     <div class="container">
+        <button id="settings-btn" title="Settings">⚙️</button>
         <h1>Income & Expense Tracker</h1>
         <div class="greeting-container">
             <h2 id="user-greeting" class="user-greeting-style"></h2>
@@ -167,24 +273,24 @@
         </div>
         <div class="balance-display">
             <h3>Current Balance</h3>
-            <div id="current-balance">₹0.00</div>
+            <div id="current-balance">0.00</div>
         </div>
 
         <div class="summary-container">
             <div class="summary-card">
                 <div class="summary-icon">💰</div>
                 <h4>Total Income</h4>
-                <p id="summary-income" data-current-value="0">₹0.00</p>
+                <p id="summary-income" data-current-value="0">0.00</p>
             </div>
             <div class="summary-card">
                 <div class="summary-icon">📤</div>
                 <h4>Total Expenses</h4>
-                <p id="summary-expenses" data-current-value="0">₹0.00</p>
+                <p id="summary-expenses" data-current-value="0">0.00</p>
             </div>
             <div class="summary-card">
                 <div class="summary-icon">🗓️</div>
                 <h4>This Month's Expenses</h4>
-                <p id="summary-monthly-expenses" data-current-value="0">₹0.00</p>
+                <p id="summary-monthly-expenses" data-current-value="0">0.00</p>
             </div>
              <div class="summary-card">
                 <div class="summary-icon">🧾</div>
@@ -222,11 +328,11 @@
                             <datalist id="description-suggestions"></datalist>
                         </div>
                         <div class="form-control full-width">
-                            <label for="transaction-amount">Amount (₹)</label>
+                            <label for="transaction-amount">Amount (<span class="currency-symbol"></span>)</label>
                             <input type="number" id="transaction-amount" step="0.01" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-primary" style="margin-top: 20px;">Add Transaction</button>
+                    <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Add Transaction</button>
                 </form>
             </div>
 
@@ -240,7 +346,7 @@
         </div>
 
         <div class="main-table-section">
-            <h2 class="section-header">Transaction Details</h2>
+            <h2 class="section-header">Transaction History</h2>
             <div class="table-border-wrapper">
                 <div class="transaction-table-container">
                     <table class="transaction-table">
@@ -260,12 +366,13 @@
         </div>
 
         <div class="global-actions">
-            <button id="send-email-btn" class="btn btn-primary">Send Report to Email</button>
-            <button id="clear-data-btn" class="btn btn-danger">Clear All Data</button>
+            <button id="send-email-btn" class="btn btn-primary">✉️ Send Report to Email</button>
+            <button id="clear-data-btn" class="btn btn-danger">🗑️ Clear All Data</button>
         </div>
         
-        <div class="developer-credit">
-            Developed By Lav Sharma
+        <div class="footer-area">
+            <button id="about-dev-btn"></> About the Developer</button>
+            <p class="copyright-text">All rights reserved © Lav Sharma 2025</p>
         </div>
     </div>
     
@@ -300,7 +407,7 @@
                             <input type="text" id="edit-transaction-description" required>
                         </div>
                         <div class="form-control full-width">
-                            <label for="edit-transaction-amount">Amount (₹)</label>
+                            <label for="edit-transaction-amount">Amount (<span class="currency-symbol"></span>)</label>
                             <input type="number" id="edit-transaction-amount" step="0.01" required>
                         </div>
                     </div>
@@ -324,6 +431,69 @@
             </form>
         </div>
     </div>
+
+    <!-- Settings Modal -->
+    <div id="settings-modal-overlay" class="modal-overlay hidden">
+        <div id="settings-modal-content" class="modal-content">
+            <div class="modal-header">
+                <h2>App Settings <span class="gear-icon">⚙️</span></h2>
+                <button id="close-settings-modal-btn" class="close-btn" title="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-row">
+                    <label for="currency-select">Currency:</label>
+                    <select id="currency-select"></select>
+                </div>
+                <p id="currency-warning" class="settings-warning hidden"></p>
+                <div class="settings-row">
+                    <label>Report a Bug:</label>
+                    <a href="mailto:lavsharma.cor@gmail.com?subject=Bug%20Report%20for%20Income%20%26%20Expense%20Tracker" id="report-bug-link">📧 Send Email</a>
+                </div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button id="settings-done-btn" class="btn btn-primary">Done</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- About Developer Modal -->
+    <div id="about-dev-modal-overlay" class="modal-overlay hidden">
+        <div id="about-dev-modal-content" class="modal-content">
+            <div class="modal-header">
+                <h2>About the Developer</h2>
+                <button id="close-about-dev-modal-btn" class="close-btn" title="Close">×</button>
+            </div>
+            <div class="modal-body">
+                <h3>Lav Sharma</h3>
+                <p class="tagline">Full-Stack Developer | B.Tech IT Student</p>
+                <div class="contact-links">
+                    <a href="mailto:lavsharma.cor@gmail.com" target="_blank">📧 Email</a>
+                    <a href="https://linkedin.com/in/lav-sharma-a9919b2ab" target="_blank">🔗 LinkedIn</a>
+                    <a href="https://github.com/Sharmaji2516" target="_blank">👨‍💻 GitHub</a>
+                </div>
+                <p class="summary">
+                    I’m a passionate and dedicated B.Tech Information Technology student, skilled in web development, database management, and problem-solving. My expertise spans Node.js, Express.js, MongoDB, and SQL, enabling me to design scalable, secure, and high-performance solutions.
+                    <br><br>
+                    With hands-on project experience—including REST API development and portfolio creation—I thrive on building impactful software that enhances efficiency. I am eager to tackle new challenges, refine my skills, and collaborate on exciting opportunities in software development.
+                </p>
+
+                <h4>Key Skills</h4>
+                <ul>
+                    <li><b>Languages:</b> C, C++</li>
+                    <li><b>Web Technologies:</b> HTML, CSS, Tailwind CSS, JavaScript, Node.js, Express.js</li>
+                    <li><b>Databases:</b> MongoDB</li>
+                    <li><b>Developer Tools:</b> VS Code, Git, GitHub, Postman</li>
+                </ul>
+
+                <h4>Education</h4>
+                <ul>
+                    <li><b>B.Tech in Information Technology</b><br>
+                        Jaipur Engineering College and Research Centre (2021 - 2025)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
     
     <div id="toast-container"></div>
 
@@ -341,6 +511,17 @@
                     toast.addEventListener('animationend', () => toast.remove());
                 }, 3000);
             };
+
+            // --- CURRENCY LOGIC START ---
+            const CURRENCY_KEY = 'trackerCurrency';
+            const SUPPORTED_CURRENCIES = [
+                { code: 'INR', symbol: '₹', name: 'Indian Rupee' },
+                { code: 'USD', symbol: '$', name: 'US Dollar' },
+                { code: 'EUR', symbol: '€', name: 'Euro' },
+                { code: 'GBP', symbol: '£', name: 'British Pound' },
+            ];
+            let currentCurrency;
+            // --- CURRENCY LOGIC END ---
 
             const greetingElement = document.getElementById('user-greeting');
             const changeNameBtn = document.getElementById('change-name-btn');
@@ -375,7 +556,16 @@
             const editTransactionCategorySelect = document.getElementById('edit-transaction-category');
             const editTransactionDescriptionInput = document.getElementById('edit-transaction-description');
             const editTransactionAmountInput = document.getElementById('edit-transaction-amount');
-
+            const aboutDevBtn = document.getElementById('about-dev-btn');
+            const aboutDevModalOverlay = document.getElementById('about-dev-modal-overlay');
+            const closeAboutDevModalBtn = document.getElementById('close-about-dev-modal-btn');
+            const settingsBtn = document.getElementById('settings-btn');
+            const settingsModalOverlay = document.getElementById('settings-modal-overlay');
+            const closeSettingsModalBtn = document.getElementById('close-settings-modal-btn');
+            const settingsDoneBtn = document.getElementById('settings-done-btn');
+            const currencySelect = document.getElementById('currency-select');
+            const currencyWarning = document.getElementById('currency-warning');
+            
             const USER_NAME_KEY = 'trackerUserName';
             const DEFAULT_CATEGORIES = ["Food", "Transport", "Bills", "Shopping", "Entertainment", "Other"];
             const CUSTOM_CATEGORIES_KEY = 'customExpenseCategories';
@@ -383,6 +573,31 @@
             let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
             let customCategories = JSON.parse(localStorage.getItem(CUSTOM_CATEGORIES_KEY)) || [];
             let expenseChart = null;
+
+            // --- CURRENCY LOGIC START ---
+            const initializeCurrency = () => {
+                const savedCurrencyCode = localStorage.getItem(CURRENCY_KEY) || 'INR';
+                currentCurrency = SUPPORTED_CURRENCIES.find(c => c.code === savedCurrencyCode) || SUPPORTED_CURRENCIES[0];
+                localStorage.setItem(CURRENCY_KEY, currentCurrency.code);
+            };
+
+            const populateCurrencyDropdown = () => {
+                currencySelect.innerHTML = '';
+                SUPPORTED_CURRENCIES.forEach(currency => {
+                    const option = document.createElement('option');
+                    option.value = currency.code;
+                    option.textContent = `${currency.symbol} ${currency.code} (${currency.name})`;
+                    currencySelect.appendChild(option);
+                });
+                currencySelect.value = currentCurrency.code;
+            };
+
+            const updateAllCurrencyDisplays = () => {
+                document.querySelectorAll('.currency-symbol').forEach(span => {
+                    span.textContent = currentCurrency.symbol;
+                });
+            };
+            // --- CURRENCY LOGIC END ---
             
             function setupUserGreeting() {
                 const savedName = localStorage.getItem(USER_NAME_KEY);
@@ -422,17 +637,20 @@
             const animateCountUp = (element, endValue, isCurrency) => {
                 const duration = 1000;
                 const startValue = parseFloat(element.dataset.currentValue || 0);
-                if (startValue === endValue) return;
+                if (startValue === endValue) {
+                    if (isCurrency) element.textContent = `${currentCurrency.symbol}${endValue.toFixed(2)}`;
+                    return;
+                }
                 let startTime = null;
                 const step = (timestamp) => {
                     if (!startTime) startTime = timestamp;
                     const progress = Math.min((timestamp - startTime) / duration, 1);
                     const currentValue = progress * (endValue - startValue) + startValue;
-                    if (isCurrency) element.textContent = `₹${currentValue.toFixed(2)}`;
+                    if (isCurrency) element.textContent = `${currentCurrency.symbol}${currentValue.toFixed(2)}`;
                     else element.textContent = Math.floor(currentValue);
                     if (progress < 1) window.requestAnimationFrame(step);
                     else {
-                        if (isCurrency) element.textContent = `₹${endValue.toFixed(2)}`;
+                        if (isCurrency) element.textContent = `${currentCurrency.symbol}${endValue.toFixed(2)}`;
                         else element.textContent = endValue;
                     }
                 };
@@ -460,7 +678,7 @@
                     })
                     .reduce((sum, t) => sum + t.amount, 0);
 
-                currentBalanceDisplay.textContent = `₹${balance.toFixed(2)}`;
+                currentBalanceDisplay.textContent = `${currentCurrency.symbol}${balance.toFixed(2)}`;
                 currentBalanceDisplay.style.color = balance >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
                 animateCountUp(summaryIncomeEl, totalIncome, true);
                 animateCountUp(summaryExpensesEl, totalExpenses, true);
@@ -511,7 +729,7 @@
                 const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
 
                 if (sortedTransactions.length === 0) {
-                     transactionTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px 0;">No transactions yet.</td></tr>`;
+                     transactionTableBody.innerHTML = `<tr><td colspan="5" style="text-align: center; padding: 20px 0;">No transactions yet. Add one to get started!</td></tr>`;
                 } else {
                     sortedTransactions.forEach(transaction => {
                         const tr = document.createElement('tr');
@@ -527,7 +745,7 @@
                             <td>${formattedDate}</td>
                             <td>${category}</td>
                             <td>${transaction.description}</td>
-                            <td class="col-amount ${amountColorClass}">${sign} ₹${transaction.amount.toFixed(2)}</td>
+                            <td class="col-amount ${amountColorClass}">${sign} ${currentCurrency.symbol}${transaction.amount.toFixed(2)}</td>
                             <td class="col-actions">
                                 <button class="action-btn edit-btn" data-id="${transaction.id}" title="Edit">✏️</button>
                                 <button class="action-btn duplicate-btn" data-id="${transaction.id}" title="Duplicate">📄</button>
@@ -560,20 +778,25 @@
                 const { labels, data } = prepareChartData();
                 const chartColors = ['#e67e22', '#3498db', '#e74c3c', '#9b59b6', '#1abc9c', '#95a5a6', '#f1c40f', '#2ecc71', '#34495e'];
 
+                const tooltipCallback = (c) => `${c.label || ''}: ${currentCurrency.symbol}${(c.parsed || 0).toFixed(2)}`;
+
                 if (expenseChart) {
-                    expenseChart.data.labels = labels; expenseChart.data.datasets[0].data = data;
+                    expenseChart.data.labels = labels;
+                    expenseChart.data.datasets[0].data = data;
+                    expenseChart.options.plugins.tooltip.callbacks.label = tooltipCallback;
                     expenseChart.update();
                 } else {
                     const ctx = expenseChartCanvas.getContext('2d');
                     expenseChart = new Chart(ctx, {
                         type: 'doughnut', data: { labels: labels, datasets: [{ label: 'Expenses', data: data, backgroundColor: chartColors, borderColor: 'rgba(44, 62, 80, 0.5)', borderWidth: 2, hoverOffset: 4 }] },
-                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: 'var(--text-color)', font: { family: "'Poppins', sans-serif" }}}, tooltip: { callbacks: { label: (c) => `${c.label || ''}: ₹${(c.parsed || 0).toFixed(2)}`}}}}
+                        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { color: 'var(--text-color)', font: { family: "'Poppins', sans-serif" }}}, tooltip: { callbacks: { label: tooltipCallback }}}}
                     });
                 }
             };
             
             const saveAndRerender = () => {
                 localStorage.setItem('transactions', JSON.stringify(transactions));
+                updateAllCurrencyDisplays();
                 renderTransactions();
                 renderOrUpdateChart();
                 updateSummaryAndBalance();
@@ -631,18 +854,16 @@
             });
 
             clearDataBtn.addEventListener('click', () => {
-                 if (transactions.length > 0 && confirm('Are you sure you want to delete ALL data?')) {
-                    if (confirm('This will also clear all saved descriptions, custom categories, AND your name. This cannot be undone. Are you sure?')) {
+                 if (transactions.length > 0 && confirm('Are you sure you want to delete ALL data? This action cannot be undone.')) {
+                    if (confirm('This will also clear all saved descriptions and custom categories. This is your final warning.')) {
                         transactions = []; customCategories = [];
                         localStorage.removeItem('transactions');
                         localStorage.removeItem(SAVED_DESCRIPTIONS_KEY);
                         localStorage.removeItem(CUSTOM_CATEGORIES_KEY);
-                        localStorage.removeItem(USER_NAME_KEY);
                         
                         populateDescriptionDatalist(); populateCategoryDropdowns();
                         saveAndRerender();
                         showToast('All data has been cleared.', 'danger');
-                        setupUserGreeting();
                     }
                 }
             });
@@ -700,12 +921,46 @@
                 showToast('Transaction updated successfully.', 'info');
             });
 
+            const openAboutDevModal = () => aboutDevModalOverlay.classList.remove('hidden');
+            const closeAboutDevModal = () => aboutDevModalOverlay.classList.add('hidden');
+            
+            aboutDevBtn.addEventListener('click', openAboutDevModal);
+            closeAboutDevModalBtn.addEventListener('click', closeAboutDevModal);
+            aboutDevModalOverlay.addEventListener('click', (e) => { if (e.target === aboutDevModalOverlay) closeAboutDevModal(); });
+
             editTransactionTypeSelect.addEventListener('change', toggleEditCategoryField);
             closeModalBtn.addEventListener('click', closeEditModal);
             cancelEditBtn.addEventListener('click', closeEditModal);
             editModalOverlay.addEventListener('click', (e) => { if (e.target === editModalOverlay) closeEditModal(); });
 
+            // Event listeners for Settings Modal
+            const openSettingsModal = () => {
+                if (transactions.length > 0) {
+                    currencySelect.disabled = true;
+                    currencyWarning.textContent = 'Clear all transactions to change currency.';
+                    currencyWarning.classList.remove('hidden');
+                } else {
+                    currencySelect.disabled = false;
+                    currencyWarning.classList.add('hidden');
+                }
+                settingsModalOverlay.classList.remove('hidden');
+            }
+            const closeSettingsModal = () => settingsModalOverlay.classList.add('hidden');
+            
+            settingsBtn.addEventListener('click', openSettingsModal);
+            closeSettingsModalBtn.addEventListener('click', closeSettingsModal);
+            settingsDoneBtn.addEventListener('click', closeSettingsModal);
+            settingsModalOverlay.addEventListener('click', (e) => { if (e.target === settingsModalOverlay) closeSettingsModal(); });
+            currencySelect.addEventListener('change', () => {
+                localStorage.setItem(CURRENCY_KEY, currencySelect.value);
+                initializeCurrency();
+                saveAndRerender();
+                showToast('Currency updated successfully!', 'success');
+            });
+
             // --- Initial Load ---
+            initializeCurrency();
+            populateCurrencyDropdown();
             setupUserGreeting();
             populateCategoryDropdowns();
             populateDescriptionDatalist();
