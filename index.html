@@ -61,6 +61,7 @@
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            z-index: 1001;
         }
         #settings-btn:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -131,15 +132,25 @@
         .global-actions { display: flex; justify-content: center; gap: 15px; margin-top: 40px; }
         
         .table-border-wrapper { padding: 2px; background: linear-gradient(45deg, var(--primary-color), var(--secondary-color), var(--accent-color)); background-size: 200% 200%; animation: gradient-animation 8s ease infinite; border-radius: 10px; margin-top: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        .transaction-table-container { max-height: 400px; overflow-y: auto; background: rgba(0,0,0,0.4); border-radius: 8px; }
-        .transaction-table-container::-webkit-scrollbar { width: 8px; }
+        .transaction-table-container { 
+            max-height: 400px;
+            overflow-y: auto;
+            overflow-x: auto; /* Added for horizontal scrolling on mobile */
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+        }
+        .transaction-table-container::-webkit-scrollbar { width: 8px; height: 8px; }
         .transaction-table-container::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
         .transaction-table-container::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
-        .transaction-table { width: 100%; border-collapse: collapse; }
+        .transaction-table { 
+            width: 100%;
+            min-width: 650px; /* Ensures columns don't get squished */
+            border-collapse: collapse;
+        }
         .transaction-table th, .transaction-table td { padding: 12px 15px; text-align: left; vertical-align: middle; border: 1px solid rgba(255, 255, 255, 0.1); }
         .transaction-table th.col-actions { text-align: center; }
         .transaction-table td.col-actions { text-align: center; }
-        .transaction-table thead { position: sticky; top: 0; z-index: 10; background: rgba(0, 0, 0, 0.4); }
+        .transaction-table thead { position: sticky; top: 0; z-index: 10; background: rgba(0, 0, 0, 0.5); }
         .transaction-table tbody tr { transition: background-color 0.3s ease; animation: slideInUp 0.5s ease-out forwards; }
         .transaction-table .category-Food { border-left: 5px solid #e67e22; }
         .transaction-table .category-Transport { border-left: 5px solid #3498db; }
@@ -261,6 +272,51 @@
         .toast.success { background: linear-gradient(45deg, var(--success-color), #27ae60); }
         .toast.danger { background: linear-gradient(45deg, var(--danger-color), #c0392b); }
         .toast.info { background: linear-gradient(45deg, var(--secondary-color), #2980b9); }
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px; /* Give more screen real estate */
+            }
+            .container {
+                padding: 20px; /* Reduce container padding */
+            }
+            #settings-btn {
+                top: 15px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1.3rem;
+            }
+            h1 {
+                font-size: 2rem; /* Reduce heading size */
+            }
+            h2 {
+                font-size: 1.4rem; /* Reduce subheading size */
+            }
+            .user-greeting-style {
+                font-size: 1.2rem;
+            }
+            .balance-display #current-balance {
+                font-size: 2.5rem; /* Reduce balance font size */
+            }
+            .summary-container {
+                gap: 15px;
+            }
+            .form-grid {
+                gap: 15px;
+            }
+            .global-actions {
+                flex-direction: column; /* Stack the main action buttons */
+                gap: 10px;
+            }
+            .global-actions .btn {
+                width: 100%; /* Make them full width for easy tapping */
+            }
+            .modal-content {
+                padding: 20px;
+            }
+        }
     </style>
 </head>
 <body>
